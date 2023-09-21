@@ -4,7 +4,13 @@ import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 export default function App() {
+  const [base, setBase] = useState('');
+  const [symbols, setSymbols] = useState('');
+  const [repositories, setRepositories] = useState([]);
 
+
+
+  // Valuuttojen haku
   const myHeaders = new Headers();
   myHeaders.append("apikey", "MyLyO6nlK1OD37UtVRirP7zykioxN416");
 
@@ -14,11 +20,17 @@ export default function App() {
     headers: myHeaders
   };
 
-  fetch("https://api.apilayer.com/exchangerates_data/latest?symbols={symbols}&base={base}", requestOptions)
+  fetch(`https://api.apilayer.com/exchangerates_data/latest?symbols=${symbols}&base=${base}`, requestOptions)
     .then(response => response.text())
     .then(result => console.log(result))
     .catch(error => console.log('error', error));
+    setRepositories(result);
 
+  //ArrayList
+  const object1 = {
+  };
+
+  console.log(Object.keys(object1));
 
   return (
     <View style={styles.container}>
@@ -26,10 +38,12 @@ export default function App() {
         style={styles.textInput}
         placeholder='EUR'
         keyboardType='number-pad'
+        value={base}
+        onChangeText={text => setBase(text)}
       />
       <View style={styles.picker}>
         <Picker>
-          <Picker.Item />
+          <Picker.Item value={symbols} />
         </Picker>
       </View>
       <View style={styles.button}>
