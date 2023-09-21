@@ -11,6 +11,7 @@ export default function App() {
 
   const APIL_API_KEY = process.env.EXPO_PUBLIC_APIL_API_KEY; 
 
+<<<<<<< HEAD
   const getData = async () => {
     const url = `https://api.apilayer.com/exchangerates_data/latest`;
     const options = {
@@ -18,6 +19,10 @@ export default function App() {
         apikey: APIL_API_KEY
       }
     };
+=======
+  // Valuuttojen haku
+  const myHeaders = new Headers();
+>>>>>>> e766a1fa18be8f39e9409f8d9b7dfaacfa54f8b9
 
     try {
       const response = await fetch(url, options);
