@@ -12,7 +12,6 @@ export default function App() {
 
   // Valuuttojen haku
   const myHeaders = new Headers();
-  myHeaders.append("apikey", "MyLyO6nlK1OD37UtVRirP7zykioxN416");
 
   const requestOptions = {
     method: 'GET',
