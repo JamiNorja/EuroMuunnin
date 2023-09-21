@@ -1,10 +1,40 @@
+import React, { useState, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function App() {
+
+  const myHeaders = new Headers();
+  myHeaders.append("apikey", "MyLyO6nlK1OD37UtVRirP7zykioxN416");
+
+  const requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    headers: myHeaders
+  };
+
+  fetch("https://api.apilayer.com/exchangerates_data/latest?symbols={symbols}&base={base}", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
+
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder='EUR'
+        keyboardType='number-pad'
+      />
+      <View style={styles.picker}>
+        <Picker>
+          <Picker.Item />
+        </Picker>
+      </View>
+      <View style={styles.button}>
+        <Button title='Convert'></Button>
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -12,9 +42,25 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    paddingTop: 150,
+    paddingLeft: 50,
+    paddingRight: 50,
+    backgroundColor: "#fff",
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  }, textInput: {
+    borderWidth: 1,
+    padding: 5,
+    backgroundColor: 'lightgrey',
+    width: '40%',
+  }, picker: {
+    borderWidth: 1,
+    width: '30px',
+    padding: 5,
+    backgroundColor: 'lightgrey',
+    width: '30%',
+  }, button: {
     justifyContent: 'center',
-  },
+    alignItems: 'center',
+  }
 });
