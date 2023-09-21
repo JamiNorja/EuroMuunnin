@@ -1,80 +1,88 @@
-import React, { useState, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
 export default function App() {
-  const [base, setBase] = useState('');
-  const [symbols, setSymbols] = useState('');
-  const [repositories, setRepositories] = useState([]);
 
+  const [rates, setRates] = useState({});
+  const [selected, setSelected] = useState('');
+  const [amount, setAmount] = useState('');
+  const [eur, setEur] = useState('');
 
+  const APIL_API_KEY = process.env.EXPO_PUBLIC_APIL_API_KEY; 
 
-  // Valuuttojen haku
-  const myHeaders = new Headers();
-  myHeaders.append("apikey", "MyLyO6nlK1OD37UtVRirP7zykioxN416");
+  const getData = async () => {
+    const url = `https://api.apilayer.com/exchangerates_data/latest`;
+    const options = {
+      headers: {
+        apikey: APIL_API_KEY
+      }
+    };
 
-  const requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
-    headers: myHeaders
-  };
+    try {
+      const response = await fetch(url, options);
+      console.log('Response status', response.status);
+      const currencyData = await response.json();
+      console.log(currencyData);
+      setRates(currencyData.rates);
+    } catch (e) {
+      Alert.alert('Error fetching data');
+    }
+  }
 
-  fetch(`https://api.apilayer.com/exchangerates_data/latest?symbols=${symbols}&base=${base}`, requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
-    setRepositories(result);
+  useEffect(() => { getData() }, []);
 
-  //ArrayList
-  const object1 = {
-  };
-
-  console.log(Object.keys(object1));
+  const convert = () => {
+    const amountEur = Number(amount) / rates(selected);
+    setEur(`${amountEur.toFixed(2)}€`);
+  }
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.textInput}
-        placeholder='EUR'
-        keyboardType='number-pad'
-        value={base}
-        onChangeText={text => setBase(text)}
+      <Image style={{ width: 200, height: 200 }}
+        source={require('.currency.jpg')}
       />
-      <View style={styles.picker}>
-        <Picker>
-          <Picker.Item value={symbols} />
+      <Text style={{ ...styles.valuerow, ...styles.text }}>{eur}</Text>
+      <View>
+        <TextInput
+          style={styles.textInput}
+          placeholder={'Amount'}
+          keyboardType='number-pad'
+          value={amount}
+          onChangeText={text => setAmount(text)}
+        />
+        <Picker style={styles.picker}
+          selectedValue={selected}
+          onValueChange={(itemValue, itemIndex) => {
+            console.log(itemValue, itemIndex);
+            setSelected(itemValue);
+          }}
+        >
+          {Object.keys(rates).sort().map(key => (<Picker.Item label={key} value={key} key={key} />))}
         </Picker>
       </View>
-      <View style={styles.button}>
-        <Button title='Convert'></Button>
-      </View>
-      <StatusBar style="auto" />
+      <Button 
+        title='Convert'
+        onPress={convert}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 150,
-    paddingLeft: 50,
-    paddingRight: 50,
-    backgroundColor: "#fff",
-    flexDirection: 'row',
-    justifyContent: 'space-evenly'
-  }, textInput: {
-    borderWidth: 1,
-    padding: 5,
-    backgroundColor: 'lightgrey',
-    width: '40%',
-  }, picker: {
-    borderWidth: 1,
-    width: '30px',
-    padding: 5,
-    backgroundColor: 'lightgrey',
-    width: '30%',
-  }, button: {
-    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#fff',
     alignItems: 'center',
+    justifyContent: 'center',
+  }, valuerow: {
+    paddingRight: 20,
+  }, textInput: {
+    flexDirection: 'row',
+    height: 50,
+  }, picker: {
+    width: 120
+  }, text: {
+    fontSize: 16
   }
 });
